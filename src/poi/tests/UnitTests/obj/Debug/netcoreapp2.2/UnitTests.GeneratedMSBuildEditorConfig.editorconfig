@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = UnitTests
+build_property.ProjectDir = C:\Users\jorge\Documents\DockerHackathon\OpenHack\containers_artifacts\src\poi\tests\UnitTests\
