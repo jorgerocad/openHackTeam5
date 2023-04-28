@@ -1,0 +1,29 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1alpha1
+kind: SecretProviderClass
+metadata:
+  name: azure-keyvault
+spec:
+  provider: azure
+  parameters:
+    keyvaultName: "openhack-jan-vault" # the name of the KeyVault
+    usePodIdentity: "false"                       # [OPTIONAL] if not provided, will default to "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: "2a9fd23a-b101-4010-939a-1e77b6f7b8d3"
+    objects: |
+      array:
+        - |
+          objectName: sql-server
+          objectAlias: SQL_SERVER     
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: sql-password
+          objectAlias: SQL_PASSWORD
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: sql-user
+          objectAlias: SQL_USER
+          objectType: secret
+          objectVersion: ""
+    tenantId: "6042515d-a7d2-4756-a080-dc85bfaf95a4" # the tenant ID of the KeyVault

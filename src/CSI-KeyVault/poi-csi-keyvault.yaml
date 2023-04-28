@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: poi
+  template:
+    metadata:
+      labels:
+        app: poi
+    spec:
+      containers:
+        - name: poi
+          image: registryobl7912.azurecr.io/coachtripinsights/poi:1.0
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          env:
+            - name: CONFIG_FILES_PATH
+              value: /mnt/secrets-store
+            - name: WEB_SERVER_BASE_URI
+              value: 'http://0.0.0.0'
+            - name: WEB_PORT
+              value: '80'
+            - name: ASPNETCORE_ENVIRONMENT
+              value: 'Production'
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-keyvault"
+---
+#service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: poi
+  namespace: web
+spec:
+  type: ClusterIP
+  selector:
+    app: poi
+  ports:
+    - port: 80 # SERVICE exposed port
+      name: http # SERVICE port name
+      protocol: TCP # The protocol the SERVICE will listen to
+      targetPort: http # Port to forward to in the POD
